@@ -1,17 +1,10 @@
-# From Base image of openjdk 8 on alpine
-FROM openjdk:8-alpine
 
-# Change workdir
-WORKDIR /opt/app
-
-# Copy the artifact to the location
-COPY target/DemoApplication-0.0.1-SNAPSHOT.jar .
-
-# Expose the port
+FROM openjdk:8-jdk-alpine
+VOLUME /tmp
+ARG JAVA_OPTS
+ENV JAVA_OPTS=$JAVA_OPTS
+ADD target/DemoApplication-0.0.1-SNAPSHOT.jar demoapplication.jar
 EXPOSE 8080
-
-# Entry point of the applciation
-ENTRYPOINT [ "java", "-jar" ]
-
-# parameter to the entrypoint is the jar file
-CMD [ "DemoApplication-0.0.1-SNAPSHOT.jar" ]
+ENTRYPOINT exec java $JAVA_OPTS -jar demoapplication.jar
+# For Spring-Boot project, use the entrypoint below to reduce Tomcat startup time.
+#ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar demoapplication.jar
